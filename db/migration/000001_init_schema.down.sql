@@ -3,3 +3,4 @@ DROP TABLE IF EXISTS addresses;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS order_details;
+DROP TABLE IF EXISTS blacklist;

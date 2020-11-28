@@ -28,13 +28,13 @@ CREATE TABLE "products" (
 );
 
 CREATE TABLE "orders" (
-  "id" bigserial PRIMARY KEY,
+  "id" bigserial[pk],
   "user_id" bigint,
   "order_date" datetime NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "order_details" (
-  "id" bigserial PRIMARY KEY,
+  "id" bigserial[pk],
   "order_id" bigint,
   "product_id" bigint,
   "quantity" int,

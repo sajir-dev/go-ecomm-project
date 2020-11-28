@@ -1,32 +1,46 @@
 package domain
 
 import (
+	"fmt"
+
+	"../db/config"
 	uuid "github.com/google/uuid"
 )
 
-// Product struct
-type Product struct {
-	ProductID   string  `json:"id"`
-	ProductName string  `json:"product_name"`
-	Category    string  `json:"category"`
-	Price       float32 `json:"price"`
-	Discount    float32 `json:"discout"`
-	Description string  `json:"description"`
-	// Rating      float32 `json:"rating"`
-	// Stock       int     `json:"stock"`
-	// Images      string  `json:"images"`
-	// Size        string  `json:"size"`
-}
-
 var m map[string]Product
 
-// GetProducts returns all products from the db
-func (p *Product) GetProducts() ([]Product, error) {
+// GetAllProducts returns all products from the db
+func (p *Product) GetAllProducts() ([]Product, error) {
 	// ToDo: Get all products query to DB
 	var ps []Product
-	for _, v := range m {
-		ps = append(ps, v)
+	// for _, v := range m {
+	// 	ps = append(ps, v)
+	// }
+
+	rows, err := config.DB.Query(`SELECT * FROM products`)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
 	}
+
+	for rows.Next() {
+		var product Product
+		rows.Scan(
+			&product.ProductID,
+			&product.ProductName,
+			&product.Category,
+			&product.Price,
+			&product.Discount,
+			&product.Description,
+		)
+		ps = append(ps, product)
+	}
+
+	if err = rows.Err(); err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
 	return ps, nil
 }
 
