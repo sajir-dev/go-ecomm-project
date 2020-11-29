@@ -47,6 +47,7 @@ func (p *Product) GetAllProducts() ([]Product, error) {
 // CreateProduct creates a product in db
 func (p *Product) CreateProduct(productName string, category string, price float32, discount float32, description string) (*Product, error) {
 	// ToDo: insert into the db
+	// insert into products (product_name, category, price, discount, description, rating) values ('test name','test cat', 34.5, 12, 'test description', 4.5);
 
 	uuid := uuid.New().String()
 
