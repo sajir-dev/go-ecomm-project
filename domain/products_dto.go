@@ -13,3 +13,5 @@ type Product struct {
 	// Images      string  `json:"images"`
 	// Size        string  `json:"size"`
 }
+
+// insert into products (product_name, category, price, discount, description, rating) values ('test name','test cat', 34.5, 12, 'test description', 4.5);
