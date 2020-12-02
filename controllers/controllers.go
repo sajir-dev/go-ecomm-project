@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"../services"
@@ -12,7 +13,7 @@ type Product struct {
 	ProductName string  `json:"product_name"`
 	Category    string  `json:"category"`
 	Price       float32 `json:"price"`
-	Discount    float32 `json:"discout"`
+	Discount    float32 `json:"discount"`
 	Description string  `json:"description"`
 	Rating      float32 `json:"rating"`
 }
@@ -68,6 +69,7 @@ func GetAllProducts(c *gin.Context) {
 func GetProduct(c *gin.Context) {
 	id := c.Param("id")
 	res, err := services.ProductServices.GetProduct(id)
+	fmt.Println(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError,
 			gin.H{
@@ -90,6 +92,8 @@ func UpdateProduct(c *gin.Context) {
 			gin.H{"error": "Bad Request"})
 		return
 	}
+
+	fmt.Println(p)
 
 	res, err := services.ProductServices.UpdateProduct(
 		p.ProductID,

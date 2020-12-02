@@ -46,15 +46,22 @@ func GetAllProducts() ([]Product, error) {
 
 // GetProduct returns a single product based on the input given
 func GetProduct(id string) (*Product, error) {
-	var p *Product
-	row := config.DB.QueryRow(`select * from products where id = "` + id + `"`)
-	err := row.Scan(&p.ProductID, &p.ProductName, &p.Category, &p.Price, &p.Discount, &p.Description, &p.Rating)
+	var product *Product = &Product{}
+	row := config.DB.QueryRow(`select * from products where id = ` + id)
+	err := row.Scan(
+		&product.ProductID,
+		&product.ProductName,
+		&product.Category,
+		&product.Price,
+		&product.Discount,
+		&product.Description,
+		&product.Rating)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
 	}
 
-	return p, nil
+	return product, nil
 }
 
 // CreateProduct creates a product in db
@@ -75,10 +82,18 @@ func CreateProduct(productName string, category string, price float32, discount 
 		return nil, err
 	}
 
-	id, _ := stmt.LastInsertId()
-	row := config.DB.QueryRow(`select * from products where id = "` + fmt.Sprint(id) + `"`)
-	var product *Product
-	err = row.Scan(&product.ProductID, &product.ProductName, &product.Category, &product.Price, &product.Description, &product.Rating)
+	id, err := stmt.LastInsertId()
+	fmt.Println("stmt.LastInsertedId()" + string(id) + "error:" + fmt.Sprint(err))
+	row := config.DB.QueryRow(`select * from products where product_name = '` + productName + `'`)
+	var product *Product = &Product{}
+	err = row.Scan(
+		&product.ProductID,
+		&product.ProductName,
+		&product.Category,
+		&product.Price,
+		&product.Discount,
+		&product.Description,
+		&product.Rating)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -103,31 +118,32 @@ func CreateProduct(productName string, category string, price float32, discount 
 // UpdateProduct updates the given arguments of a particular product
 func UpdateProduct(id string, productName string, category string, price float32, discount float32, description string, rating float32) (*Product, error) {
 
-	row := config.DB.QueryRow(`select * from products where id = "` + fmt.Sprint(id) + `"`)
-	var product *Product
-	err := row.Scan(&product.ProductID, &product.ProductName, &product.Category, &product.Price, &product.Description, &product.Rating)
+	// row := config.DB.QueryRow(`select * from products where id = ` + fmt.Sprint(id))
+	var product *Product = &Product{}
+	// err := row.Scan(&product.ProductID, &product.ProductName, &product.Category, &product.Price, &product.Description, &product.Rating)
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return nil, err
+	// }
+
+	_, err := config.DB.Exec(`
+		update products set product_name='` + productName + `',category='` + category + `', price=` + fmt.Sprint(price) + `, discount=` + fmt.Sprint(discount) + `, description='` + description + `', rating=` + fmt.Sprint(rating) + `where id = ` + id + `;`)
 
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
 	}
 
-	_, err = config.DB.Exec(`insert into products (product_name, category, price, discount, description, rating) values ($1, $2, $3, $4, $5, $6) where id=`+id,
-		productName,
-		category,
-		price,
-		discount,
-		description,
-		rating)
-
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
-
-	row = config.DB.QueryRow(`select * from products where id = "` + fmt.Sprint(id) + `"`)
-	err = row.Scan(&product.ProductID, &product.ProductName, &product.Category, &product.Price, &product.Description, &product.Rating)
-
+	row := config.DB.QueryRow(`select * from products where product_name = '` + productName + `'`)
+	err = row.Scan(
+		&product.ProductID,
+		&product.ProductName,
+		&product.Category,
+		&product.Price,
+		&product.Discount,
+		&product.Description,
+		&product.Rating)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
